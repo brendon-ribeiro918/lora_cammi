@@ -1,0 +1,9 @@
+torch>=1.10.0
+transformers
+diffusers[torch]
+datasets
+tqdm
+scikit-image
+opencv-python
+matplotlib
+Pillow

@@ -119,13 +119,3 @@ Train a Stable Diffusion LoRA model on a provided set of images and evaluate its
         PIXEL_MAX = 255.0
         return 20 * np.log10(PIXEL_MAX / np.sqrt(mse))
     ```
-
-## Challenges
-1. **Hardware Limitations**
-    I was not able to test the model properly because my hardware didn’t meet the requirements. This made it challenging to conduct extensive training and evaluation locally.
-2. **RunPod Setup Issues**
-    Although a RunPod instance was provided to me, I could not set it up correctly as I kept running into errors and had to put it aside in order to meet the deadline. This is because I am not familiar with RunPod, and it is something I will have to learn now.
-3. **Evaluation Constraints**
-    Due to hardware limitations, I was unable to perform extensive evaluations using metrics like PSNR and SSIM. Evaluations were limited to small sample sizes.
-4. **Large Dependencies**
-    Downloading and installing large dependencies such as PyTorch and pre-trained models was problematic due to limited bandwidth and storage space. This hindered the setup process.

@@ -5,117 +5,55 @@ Train a Stable Diffusion LoRA model on a provided set of images and evaluate its
 
 ## Table of Contents
 1. Environment Setup
-2. Directory Structure
-3. Training Steps
-4. Evaluate the Model
-5. Challenges
+2. Training Steps
+3. Evaluate the Model
+4. Challenges
 
 ## Environment Setup
-1. **Set Up Virtual Environment**
-    ```bash
-    python -m venv lora_env
-    source lora_env/bin/activate  # On Windows use `lora_env\Scripts\activate`
-    ```
+1. **Clone the Repository**
+    git clone https://github.com/yourusername/lora_cammi.git
+    cd lora_cammi
 
 2. **Install Dependencies**
-    ```bash
-    pip install -r requirements.txt
-    ```
+    Ensure you have Python 3.x installed. Install the required Python packages using pip:
+    torch>=1.9.0
+    torchvision>=0.10.0
+    transformers>=4.11.3
+    diffusion>=0.4.0
+    numpy>=1.21.2
+    matplotlib>=3.4.3
+    Pillow>=8.3.2
 
 3. **Run the main script**
     ```bash
     python main.py
     ```
-
-## Directory Structure
-    stable_diffusion_lora_training/
-    │
-    ├── README.md
-    ├── requirements.txt
-    ├── main.py
-    │
-    ├── data/
-    │   ├── preprocess.py
-    │   ├── augment.py
-    │   └── data_loader.py
-    │
-    ├── model/
-    │   ├── lora_model.py
-    │   ├── train.py
-    │   └── evaluate.py
+Prepare Data:
+Place your low-resolution images in a directory and specify the input directory path in the code.
 
 ## Training Steps
-1. **Define Model and Set Hyperparameters**
-    ```python
-    class Trainer:
-    def __init__(self, model, train_loader, val_loader=None, num_epochs=10, learning_rate=1e-4, checkpoint_dir='checkpoints'):
-        self.model = model
-        self.train_loader = train_loader
-        self.val_loader = val_loader
-        self.num_epochs = num_epochs
-        self.learning_rate = learning_rate
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
-        self.criterion = nn.MSELoss()
-        self.checkpoint_dir = checkpoint_dir
+Initialize Model:
+The LoRA model is initialized with specified parameters such as input channels, hidden channels, number of layers, and kernel size.
 
-        if not os.path.exists(checkpoint_dir):
-            os.makedirs(checkpoint_dir)
-    ```
-2. **Implement Training Loop**
-    ```python
-    def train(self):
-        self.model.train()
-        for epoch in range(self.num_epochs):
-            epoch_loss = 0
-            for inputs, targets in tqdm(self.train_loader):
-                inputs, targets = inputs.to("cuda"), targets.to("cuda")
-                
-                self.optimizer.zero_grad()
-                outputs = self.model(inputs)
-                loss = self.criterion(outputs, targets)
-                loss.backward()
-                self.optimizer.step()
+Prepare Dataset:
+The dataset is prepared using the CustomImageDataset class, which loads the images and applies transformations.
 
-                epoch_loss += loss.item()
-            
-            avg_loss = epoch_loss / len(self.train_loader)
-            print(f"Epoch [{epoch+1}/{self.num_epochs}], Loss: {avg_loss:.4f}")
+Train the Model:
+The model is trained using Mean Squared Error (MSE) loss and Adam optimizer. Training progresses over multiple epochs.
 
-            self.save_checkpoint(epoch, avg_loss)
-            self.log_metrics(epoch, avg_loss)
-    ```
+Save the Model:
+After training, the model state is saved to a file (lora_model.pth) for future use.
 
 ## Evaluate the Model
-1. **Generate Images**
-    Generate images using the trained model, compare generated images to original images, and provide evaluation metrics (PSNR, SSIM) in the evaluate.py script.
-2. **Compare and Evaluate**
-    ```python
-    class Evaluator:
-    def __init__(self, model, data_loader):
-        self.model = model
-        self.data_loader = data_loader
+Evaluation Metrics=>
 
-    def evaluate(self):
-        ssim_values = []
-        psnr_values = []
-        for original_image, generated_image in self.data_loader:
-            original = np.array(original_image)
-            generated = np.array(generated_image)
+The model's performance is evaluated using two metrics:
 
-            # Evaluate Structural Similarity Index Measure
-            ssim_value = ssim(original, generated, multichannel=True)
-            ssim_values.append(ssim_value)
+    Peak Signal-to-Noise Ratio (PSNR)
+    Structural Similarity Index (SSIM)
 
-            # Evaluate Peak Signal-to-Noise Ratio
-            psnr_value = self.psnr(original, generated)
-            psnr_values.append(psnr_value)
-
-        return np.mean(ssim_values), np.mean(psnr_values)
-
-    def psnr(self, img1, img2):
-        mse = np.mean((img1 - img2) ** 2)
-        if mse == 0:
-            return 100
-        PIXEL_MAX = 255.0
-        return 20 * np.log10(PIXEL_MAX / np.sqrt(mse))
-    ```
+Evaluation Process:
+```The trained model is used to generate high-resolution images from the low-resolution inputs.
+PSNR and SSIM are calculated between the generated images and the original high-resolution images.
+```
+## Challenges
